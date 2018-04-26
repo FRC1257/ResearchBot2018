@@ -1,4 +1,5 @@
 #include <MotionProfileController.h>
+#include <WPILib.h>
 #include <cmath>
 #include <algorithm>
 
@@ -55,6 +56,9 @@ void MotionProfileController::SetSetpoint(double currentPosition, double setpoin
 	// Trapezoidal vs Triangular profile
 	isTrapezoidal = (acceleratingDistance < (travelDistance / 2.0));
 	cruisingDistance = isTrapezoidal ? (travelDistance - (2 * acceleratingDistance)) : 0;
+
+	SmartDashboard::PutString("Setpoint Data", "Setpoint " + std::to_string(setpoint) + " " +
+			std::to_string(isTrapezoidal) + " " + std::to_string(cruisingDistance) + " " + std::to_string(acceleratingDistance));
 }
 
 double MotionProfileController::Calculate(double currentPosition)
@@ -63,6 +67,8 @@ double MotionProfileController::Calculate(double currentPosition)
 	{
 		double distanceFromEnd = std::abs(endPoint - currentPosition);
 		double distanceFromStart = std::abs(startPoint - currentPosition);
+		SmartDashboard::PutString("Distance Info", "Distance From End " + std::to_string(distanceFromEnd) +
+				" " + std::to_string(distanceFromStart));
 
 		double maxReachVelocity = (nextVelocity * nextVelocity) / 2.0 +
 				(maxAcceleration * distanceFromEnd);
@@ -90,6 +96,8 @@ double MotionProfileController::Calculate(double currentPosition)
 		// First leg of trapezoid/triangle
 		if(distanceFromStart <= acceleratingDistance)
 		{
+			SmartDashboard::PutString("Spongebob", "Engaging the special sauce");
+			SmartDashboard::PutBoolean("Deccelerating", false);
 			SetOutputArray(nextVelocity * DT + 0.5 * maxAcceleration * DT * DT,
 		             nextVelocity + (maxAcceleration * DT),
 		             maxAcceleration);
@@ -97,7 +105,9 @@ double MotionProfileController::Calculate(double currentPosition)
 		// Second leg of trapezoid/triangle
 		else if(distanceFromStart > (acceleratingDistance + cruisingDistance))
 		{
-			SetOutputArray(newAdjustedMaxVelocity * DT - 0.5 * maxAcceleration * DT * DT,
+			SmartDashboard::PutBoolean("Deccelerating", true);
+			SmartDashboard::PutString("Spongebob", "Engaging the special sauce, the crabby patty sauce");
+			SetOutputArray(newAdjustedMaxVelocity * DT - (0.5 * maxAcceleration * DT * DT),
 		            newAdjustedMaxVelocity - (maxAcceleration * DT),
 		            -maxAcceleration);
 		}
@@ -115,6 +125,7 @@ double MotionProfileController::Calculate(double currentPosition)
 		if(isTrapezoidal && (distanceFromStart <= (acceleratingDistance + cruisingDistance))
 		         && (distanceFromStart > acceleratingDistance))
 		{
+			SmartDashboard::PutBoolean("Deccelerating", false);
 			SetOutputArray(adjustedMaxVelocity * DT, adjustedMaxVelocity, 0);
 		}
 
@@ -130,8 +141,10 @@ void MotionProfileController::SetOutputArray(double nextDistance, double nextVel
 		double nextAcceleration)
 {
 	outputs[0] += nextDistance * (backwards ? -1 : 1);
-	outputs[1] += nextVelocity * (backwards ? -1 : 1);
-	outputs[2] += nextAcceleration * (backwards ? -1 : 1);
+	outputs[1] = nextVelocity * (backwards ? -1 : 1);
+	outputs[2] = nextAcceleration * (backwards ? -1 : 1);
+
+	SmartDashboard::PutString("Outputs", std::to_string(outputs[0]) + " " + std::to_string(outputs[1]) + " " + std::to_string(outputs[2]));
 
 	this->nextVelocity = nextVelocity;
 }

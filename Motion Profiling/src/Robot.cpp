@@ -61,7 +61,7 @@ public:
 		DriveTrain(LeftMotors, RightMotors),
 		DriveController(0),
 
-		constants{0, 0, 0, 0, 0},
+		constants{0, 0.005, 0, 130, 35},
 		controller(constants),
 
 		lastPosition(0),
@@ -105,6 +105,9 @@ public:
 
 		SmartDashboard::PutBoolean("Reset Encoders", false);
 		SmartDashboard::PutBoolean("Change Gains", false);
+
+		FrontLeftMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 	}
 
 	void AutonomousInit()
@@ -130,16 +133,16 @@ public:
 			FrontRightMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 			SmartDashboard::PutBoolean("Reset Encoders", false);
 		}
-		if(SmartDashboard::GetBoolean("Change Gains", false))
-		{
-			MotionProfileConstants newConstants = {SmartDashboard::GetNumber("kP", 0),
-					SmartDashboard::GetNumber("kF", 0),
-					SmartDashboard::GetNumber("kV", 0),
-					SmartDashboard::GetNumber("Max Velocity", 0),
-					SmartDashboard::GetNumber("Max Acceleration", 0)};
-			controller.ChangeGains(newConstants);
-			SmartDashboard::PutBoolean("Change Gains", false);
-		}
+//		if(SmartDashboard::GetBoolean("Change Gains", false))
+//		{
+//			MotionProfileConstants newConstants = {SmartDashboard::GetNumber("kP", 0),
+//					SmartDashboard::GetNumber("kF", 0),
+//					SmartDashboard::GetNumber("kV", 0),
+//					SmartDashboard::GetNumber("Max Velocity", 0),
+//					SmartDashboard::GetNumber("Max Acceleration", 0)};
+//			controller.ChangeGains(newConstants);
+//			SmartDashboard::PutBoolean("Change Gains", false);
+//		}
 
 		if(DriveController.GetYButton())
 		{
@@ -147,7 +150,7 @@ public:
 			{
 				controller.SetSetpoint(PulsesToInches(FrontLeftMotor.GetSelectedSensorPosition(0)), 100);
 			}
-			if(!controller.IsFinished())
+//			if(!controller.IsFinished())
 			{
 				double output = controller.Calculate(PulsesToInches(FrontLeftMotor.GetSelectedSensorPosition(0)));
 				DriveTrain.ArcadeDrive(output, 0, false);
