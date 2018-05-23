@@ -7,6 +7,12 @@
 
 package org.usfirst.frc.team1257.robot;
 
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring, makes checking
@@ -14,13 +20,17 @@ package org.usfirst.frc.team1257.robot;
  * floating around.
  */
 public class RobotMap {
-	// For example to map the left and right motors, you could define the
-	// following variables to use with your drivetrain subsystem.
-	// public static int leftMotor = 1;
-	// public static int rightMotor = 2;
+//	private static final String kDefaultAuto = "Default";
+//	private static final String kCustomAuto = "My Auto";
+//	private String m_autoSelected;
+//	private SendableChooser<String> m_chooser = new SendableChooser<>();
+	public static Spark m_frontLeft = new Spark(1);
+	public static Spark m_rearLeft = new Spark(2);
+	public static SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
 
-	// If you are using multiple modules, make sure to define both the port
-	// number and the module. For example you with a rangefinder:
-	// public static int rangefinderPort = 1;
-	// public static int rangefinderModule = 1;
+	public static Spark m_frontRight = new Spark(3);
+	public static Spark m_rearRight = new Spark(4);
+	public static SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
+
+	public static DifferentialDrive DriveTrain = new DifferentialDrive(m_left, m_right);
 }
