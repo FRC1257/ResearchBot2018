@@ -22,9 +22,9 @@ double InchesToPulses(double inches)
 	return pulses;
 }
 
-double ConvertAngleToDistance(double angle, double distanceBetweenWheels)
+double ConvertAngleToDistance(double angle)
 {
-	return InchesToPulses(consts::PI * distanceBetweenWheels * angle / 360.0);
+	return InchesToPulses(consts::PI * consts::DISTANCE_BETWEEN_WHEELS * angle / 360.0);
 }
 
 class Robot : public IterativeRobot
@@ -35,10 +35,10 @@ private:
 	WPI_TalonSRX FrontLeftMotor;
 	WPI_TalonSRX BackLeftMotor;
 
+	SpeedControllerGroup LeftMotors;
+	SpeedControllerGroup RightMotors;
 	DifferentialDrive DriveTrain;
 	XboxController DriveController;
-
-	bool lastButton;
 
 public:
 	Robot() :
@@ -47,9 +47,10 @@ public:
 		FrontLeftMotor(3),
 		BackLeftMotor(4),
 
-		DriveTrain(FrontLeftMotor, FrontRightMotor),
-		DriveController(0),
-		lastButton(false)
+		LeftMotors(FrontLeftMotor, BackLeftMotor),
+		RightMotors(FrontRightMotor, BackRightMotor),
+		DriveTrain(LeftMotors, RightMotors),
+		DriveController(0)
 	{
 
 	}
@@ -78,22 +79,21 @@ public:
 		FrontLeftMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 		FrontRightMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 
-		FrontLeftMotor.ConfigAllowableClosedloopError(0, InchesToPulses(2), consts::TALON_TIMEOUT_MS);
-		FrontRightMotor.ConfigAllowableClosedloopError(0, InchesToPulses(2), consts::TALON_TIMEOUT_MS);
+		FrontLeftMotor.ConfigAllowableClosedloopError(0, InchesToPulses(consts::TALON_TOLERANCE), consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.ConfigAllowableClosedloopError(0, InchesToPulses(consts::TALON_TOLERANCE), consts::TALON_TIMEOUT_MS);
 
 		FrontLeftMotor.SelectProfileSlot(0, 0);
-		FrontLeftMotor.Config_kP(0, 0.2, consts::PID_TIMEOUT_S);
-		FrontLeftMotor.Config_kI(0, 0, consts::PID_TIMEOUT_S);
-		FrontLeftMotor.Config_kD(0, 0, consts::PID_TIMEOUT_S);
-		FrontLeftMotor.Config_kF(0, 0, consts::PID_TIMEOUT_S);
+		FrontLeftMotor.Config_kP(0, consts::TALON_P, consts::TALON_TIMEOUT_MS);
+		FrontLeftMotor.Config_kI(0, consts::TALON_I, consts::TALON_TIMEOUT_MS);
+		FrontLeftMotor.Config_kD(0, consts::TALON_D, consts::TALON_TIMEOUT_MS);
+		FrontLeftMotor.Config_kF(0, consts::TALON_F, consts::TALON_TIMEOUT_MS);
 
 		FrontRightMotor.SelectProfileSlot(0, 0);
-		FrontRightMotor.Config_kP(0, 0.2, consts::PID_TIMEOUT_S);
-		FrontRightMotor.Config_kI(0, 0, consts::PID_TIMEOUT_S);
-		FrontRightMotor.Config_kD(0, 0, consts::PID_TIMEOUT_S);
-		FrontRightMotor.Config_kF(0, 0, consts::PID_TIMEOUT_S);
+		FrontRightMotor.Config_kP(0, consts::TALON_P, consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.Config_kI(0, consts::TALON_I, consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.Config_kD(0, consts::TALON_D, consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.Config_kF(0, consts::TALON_F, consts::TALON_TIMEOUT_MS);
 
-//		FrontLeftMotor.Follow(FrontRightMotor);
 		BackLeftMotor.Follow(FrontLeftMotor);
 		BackRightMotor.Follow(FrontRightMotor);
 
@@ -114,24 +114,11 @@ public:
 		FrontLeftMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 		FrontRightMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 
-		FrontLeftMotor.Set(ControlMode::Position, distance);
-		FrontRightMotor.Set(ControlMode::Position, -distance);
-
-		SmartDashboard::PutNumber("Error L", PulsesToInches(
-				std::abs(FrontLeftMotor.GetClosedLoopError(consts::PID_LOOP_ID))));
-		SmartDashboard::PutNumber("Error R", PulsesToInches(
-				std::abs(FrontRightMotor.GetClosedLoopError(consts::PID_LOOP_ID))));
-
-		while(std::abs(FrontLeftMotor.GetClosedLoopError(consts::PID_LOOP_ID)) >= InchesToPulses(3) ||
-				std::abs(FrontRightMotor.GetClosedLoopError(consts::PID_LOOP_ID)) >= InchesToPulses(3))
+		while(std::abs(FrontLeftMotor.GetClosedLoopError(consts::PID_LOOP_ID)) >= InchesToPulses(consts::TALON_TOLERANCE) ||
+				std::abs(FrontRightMotor.GetClosedLoopError(consts::PID_LOOP_ID)) >= InchesToPulses(consts::TALON_TOLERANCE))
 		{
-			SmartDashboard::PutNumber("Error L", PulsesToInches(
-					std::abs(FrontLeftMotor.GetClosedLoopError(consts::PID_LOOP_ID))));
-			SmartDashboard::PutNumber("Error R", PulsesToInches(
-					std::abs(FrontRightMotor.GetClosedLoopError(consts::PID_LOOP_ID))));
-
 			FrontLeftMotor.Set(ControlMode::Position, distance);
-			FrontRightMotor.Set(ControlMode::Position, -distance);
+			FrontRightMotor.Set(ControlMode::Position, distance);
 
 			SmartDashboard::PutNumber("Left Distance", PulsesToInches(FrontLeftMotor.GetSelectedSensorPosition(0)));
 			SmartDashboard::PutNumber("Right Distance", PulsesToInches(FrontRightMotor.GetSelectedSensorPosition(0)));
@@ -143,13 +130,10 @@ public:
 		FrontLeftMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 		FrontRightMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 
-		double distance = ConvertAngleToDistance(angle, 20);
+		double distance = ConvertAngleToDistance(angle);
 
-		FrontLeftMotor.Set(ControlMode::Position, distance);
-		FrontRightMotor.Set(ControlMode::Position, -distance);
-
-		while(std::abs(FrontLeftMotor.GetClosedLoopError(consts::PID_LOOP_ID)) >= InchesToPulses(2) ||
-				std::abs(FrontRightMotor.GetClosedLoopError(consts::PID_LOOP_ID)) >= InchesToPulses(2))
+		while(std::abs(FrontLeftMotor.GetClosedLoopError(consts::PID_LOOP_ID)) >= InchesToPulses(consts::TALON_TOLERANCE) ||
+				std::abs(FrontRightMotor.GetClosedLoopError(consts::PID_LOOP_ID)) >= InchesToPulses(consts::TALON_TOLERANCE))
 		{
 			FrontLeftMotor.Set(ControlMode::Position, distance);
 			FrontRightMotor.Set(ControlMode::Position, -distance);
@@ -169,9 +153,6 @@ public:
 	{
 		FrontLeftMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 		FrontRightMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
-
-		if(FrontLeftMotor.GetControlMode() != ControlMode::PercentOutput) FrontLeftMotor.Set(ControlMode::PercentOutput, 0);
-		if(FrontRightMotor.GetControlMode() != ControlMode::PercentOutput) FrontRightMotor.Set(ControlMode::PercentOutput, 0);
 	}
 
 	void TeleopPeriodic() override
@@ -186,36 +167,36 @@ public:
 			FrontRightMotor.SetSelectedSensorPosition(0, consts::PID_LOOP_ID, consts::TALON_TIMEOUT_MS);
 		}
 
-		if(true)
+		if(FrontLeftMotor.GetControlMode() != ControlMode::PercentOutput) FrontLeftMotor.Set(ControlMode::PercentOutput, 0);
+		if(FrontRightMotor.GetControlMode() != ControlMode::PercentOutput) FrontRightMotor.Set(ControlMode::PercentOutput, 0);
+
+		double forwardSpeed = 0;
+		double turnSpeed = 0;
+
+		// If they press A, use single stick arcade with the left joystick
+		if(DriveController.GetAButton())
 		{
-			double forwardSpeed = 0;
-			double turnSpeed = 0;
-
-			// If they press A, use single stick arcade with the left joystick
-			if(DriveController.GetAButton())
-			{
-				forwardSpeed = DriveController.GetY(GenericHID::JoystickHand::kLeftHand);
-				turnSpeed = DriveController.GetX(GenericHID::JoystickHand::kLeftHand);
-			}
-			// If they press the left bumper, use the left joystick for forward and
-			// backward motion and the right joystick for turning
-			else if(DriveController.GetBumper(GenericHID::JoystickHand::kLeftHand))
-			{
-				forwardSpeed = DriveController.GetY(GenericHID::JoystickHand::kLeftHand);
-				turnSpeed = DriveController.GetX(GenericHID::JoystickHand::kRightHand);
-			}
-			// If they press the right bumper, use the right joystick for forward and
-			// backward motion and the left joystick for turning
-			else if(DriveController.GetBumper(GenericHID::JoystickHand::kRightHand))
-			{
-				forwardSpeed = DriveController.GetY(GenericHID::JoystickHand::kRightHand);
-				turnSpeed = DriveController.GetX(GenericHID::JoystickHand::kLeftHand);
-			}
-
-			// Negative is used to make forward positive and backwards negative
-			// because the y-axes of the XboxController are natively inverted
-			DriveTrain.ArcadeDrive(-forwardSpeed, turnSpeed);
+			forwardSpeed = DriveController.GetY(GenericHID::JoystickHand::kLeftHand);
+			turnSpeed = DriveController.GetX(GenericHID::JoystickHand::kLeftHand);
 		}
+		// If they press the left bumper, use the left joystick for forward and
+		// backward motion and the right joystick for turning
+		else if(DriveController.GetBumper(GenericHID::JoystickHand::kLeftHand))
+		{
+			forwardSpeed = DriveController.GetY(GenericHID::JoystickHand::kLeftHand);
+			turnSpeed = DriveController.GetX(GenericHID::JoystickHand::kRightHand);
+		}
+		// If they press the right bumper, use the right joystick for forward and
+		// backward motion and the left joystick for turning
+		else if(DriveController.GetBumper(GenericHID::JoystickHand::kRightHand))
+		{
+			forwardSpeed = DriveController.GetY(GenericHID::JoystickHand::kRightHand);
+			turnSpeed = DriveController.GetX(GenericHID::JoystickHand::kLeftHand);
+		}
+
+		// Negative is used to make forward positive and backwards negative
+		// because the y-axes of the XboxController are natively inverted
+		DriveTrain.ArcadeDrive(-forwardSpeed, turnSpeed);
 	}
 };
 
