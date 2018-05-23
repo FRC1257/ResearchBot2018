@@ -41,10 +41,9 @@ private:
 	WPI_TalonSRX FrontLeftMotor;
 	WPI_TalonSRX BackLeftMotor;
 
+	AHRS Ahrs;
 	DifferentialDrive DriveTrain;
 	XboxController DriveController;
-
-	AHRS Ahrs;
 
 	Timer timer;
 	double lastAccTime;

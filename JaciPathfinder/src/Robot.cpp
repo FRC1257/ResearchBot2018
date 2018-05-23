@@ -42,11 +42,17 @@ void Robot::RobotInit()
 	FrontRightMotor.SetSensorPhase(true);
 
 
+	SmartDashboard::PutNumber("Left Encoder Pos", 0);
+	SmartDashboard::PutNumber("Right Encoder Pos", 0);
+
 	SmartDashboard::PutNumber("Left Encoder Vel", 0);
 	SmartDashboard::PutNumber("Right Encoder Vel", 0);
 
-	SmartDashboard::PutNumber("Left Encoder Acc", 0);
-	SmartDashboard::PutNumber("Right Encoder Acc", 0);
+	SmartDashboard::PutNumber("Left Encoder Vel", 0);
+	SmartDashboard::PutNumber("Right Encoder Vel", 0);
+
+	SmartDashboard::PutNumber("Left Encoder Jerk", 0);
+	SmartDashboard::PutNumber("Right Encoder Jerk", 0);
 }
 
 void Robot::AutonomousInit()
@@ -126,7 +132,7 @@ void Robot::LogData()
 	SmartDashboard::PutNumber("Right Encoder Vel", currentRightVel);
 
 	double currentLeftAcc = currentLeftVelDiff / (timer.Get() - lastAccTime);
-	double currentRightAcc = currentLeftVelDiff / (timer.Get() - lastAccTime);
+	double currentRightAcc = currentRightVelDiff / (timer.Get() - lastAccTime);
 
 	lastAccTime = timer.Get();
 
@@ -138,6 +144,9 @@ void Robot::LogData()
 
 	double currentLeftJerk = currentLeftAccDiff / (timer.Get() - lastJerkTime);
 	double currentRightJerk = currentRightAccDiff / (timer.Get() - lastJerkTime);
+
+	SmartDashboard::PutNumber("Left Encoder Jerk", currentLeftJerk);
+	SmartDashboard::PutNumber("Right Encoder jerk", currentRightJerk);
 
 	lastJerkTime = timer.Get();
 }
