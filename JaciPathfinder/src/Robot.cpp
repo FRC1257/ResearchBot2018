@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 #include "Robot.h"
 
 void Robot::RobotInit()
@@ -17,7 +10,7 @@ void Robot::RobotInit()
 	points[1] = p2;
 	points[2] = p3;
 
-	pathfinder_prepare(points, POINT_LENGTH, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_HIGH, 0.001,
+	pathfinder_prepare(points, POINT_LENGTH, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_HIGH, TIME_STEP,
 			MAX_VEL, MAX_ACC, MAX_JER, &candidate);
 	int length = candidate.length;
 
@@ -34,7 +27,7 @@ void Robot::RobotInit()
 
 	config = {
 			0, PULSES_PER_REV, WHEEL_DIAMETER * PI,
-			1.0, 0.0, 0.0, 1.0 / MAX_VEL, 0.0
+			PATH_P, PATH_I, PATH_D, PATH_F, PATH_A
 	};
 
 	free(trajectory);
@@ -47,6 +40,13 @@ void Robot::RobotInit()
 
 	FrontRightMotor.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, PID_LOOP_ID, TALON_TIMEOUT_MS);
 	FrontRightMotor.SetSensorPhase(true);
+
+
+	SmartDashboard::PutNumber("Left Encoder Vel", 0);
+	SmartDashboard::PutNumber("Right Encoder Vel", 0);
+
+	SmartDashboard::PutNumber("Left Encoder Acc", 0);
+	SmartDashboard::PutNumber("Right Encoder Acc", 0);
 }
 
 void Robot::AutonomousInit()
@@ -59,11 +59,11 @@ void Robot::AutonomousPeriodic()
 	double l = pathfinder_follow_encoder(config, &leftFollower, leftTrajectory, POINT_LENGTH, FrontLeftMotor.GetSelectedSensorPosition(0));
 	double r = pathfinder_follow_encoder(config, &rightFollower, rightTrajectory, POINT_LENGTH, FrontRightMotor.GetSelectedSensorPosition(0));
 
-	double gyroHeading = ahrs.GetYaw();
+	double gyroHeading = Ahrs.GetYaw();
 	double desired = r2d(leftFollower.heading);
 
 	double angleDifference = desired - gyroHeading;
-	double turn = -0.01 * angleDifference;
+	double turn = ANGLE_P * angleDifference;
 
 	FrontLeftMotor.Set(l + turn);
 	FrontRightMotor.Set(r - turn);
@@ -71,10 +71,16 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit()
 {
-
+	timer.Start();
 }
 
 void Robot::TeleopPeriodic()
+{
+	Drive();
+	LogData();
+}
+
+void Robot::Drive()
 {
 	double forwardSpeed = 0;
 	double turnSpeed = 0;
@@ -103,14 +109,37 @@ void Robot::TeleopPeriodic()
 	// Negative is used to make forward positive and backwards negative
 	// because the y-axes of the XboxController are natively inverted
 	DriveTrain.ArcadeDrive(-forwardSpeed, turnSpeed);
+}
 
+void Robot::LogData()
+{
 	SmartDashboard::PutNumber("Left Encoder Pos", InchesToMeters(PulsesToInches(FrontLeftMotor.GetSelectedSensorPosition(0))));
 	SmartDashboard::PutNumber("Right Encoder Pos", InchesToMeters(PulsesToInches(FrontRightMotor.GetSelectedSensorPosition(0))));
 
-	SmartDashboard::PutNumber("Left Encoder Vel", InchesToMeters(PulsesToInches(FrontLeftMotor.GetSelectedSensorVelocity(0))) * 10);
-	SmartDashboard::PutNumber("Right Encoder Vel", InchesToMeters(PulsesToInches(FrontRightMotor.GetSelectedSensorVelocity(0))) * 10);
+	double currentLeftVel = InchesToMeters(PulsesToInches(FrontLeftMotor.GetSelectedSensorVelocity(0))) * 10;
+	double currentRightVel = InchesToMeters(PulsesToInches(FrontRightMotor.GetSelectedSensorVelocity(0))) * 10;
 
+	double currentLeftVelDiff = currentLeftVel - SmartDashboard::GetNumber("Left Encoder Vel", 0);
+	double currentRightVelDiff = currentRightVel - SmartDashboard::GetNumber("Right Encoder Vel", 0);
 
+	SmartDashboard::PutNumber("Left Encoder Vel", currentLeftVel);
+	SmartDashboard::PutNumber("Right Encoder Vel", currentRightVel);
+
+	double currentLeftAcc = currentLeftVelDiff / (timer.Get() - lastAccTime);
+	double currentRightAcc = currentLeftVelDiff / (timer.Get() - lastAccTime);
+
+	lastAccTime = timer.Get();
+
+	double currentLeftAccDiff = currentLeftAcc - SmartDashboard::GetNumber("Left Encoder Vel", 0);
+	double currentRightAccDiff = currentRightAcc - SmartDashboard::GetNumber("Right Encoder Vel", 0);
+
+	SmartDashboard::PutNumber("Left Encoder Acc", currentLeftAcc);
+	SmartDashboard::PutNumber("Right Encoder Acc", currentRightAcc);
+
+	double currentLeftJerk = currentLeftAccDiff / (timer.Get() - lastJerkTime);
+	double currentRightJerk = currentRightAccDiff / (timer.Get() - lastJerkTime);
+
+	lastJerkTime = timer.Get();
 }
 
 void Robot::TestPeriodic()

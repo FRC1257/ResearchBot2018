@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 #pragma once
 
 #include <string>
@@ -51,7 +44,11 @@ private:
 	DifferentialDrive DriveTrain;
 	XboxController DriveController;
 
-	AHRS ahrs;
+	AHRS Ahrs;
+
+	Timer timer;
+	double lastAccTime;
+	double lastJerkTime;
 
 public:
 	Robot() :
@@ -59,9 +56,12 @@ public:
 		FrontRightMotor(1),
 		FrontLeftMotor(2),
 		BackLeftMotor(3),
-		ahrs(SPI::kOnboardCS0),
+		Ahrs(SPI::kOnboardCS0),
 		DriveTrain(FrontLeftMotor, FrontRightMotor),
-		DriveController(0)
+		DriveController(0),
+		timer(),
+		lastAccTime(0),
+		lastJerkTime(0)
 	{
 
 	}
@@ -71,4 +71,7 @@ public:
 	void TeleopInit() override;
 	void TeleopPeriodic() override;
 	void TestPeriodic() override;
+
+	void Drive();
+	void LogData();
 };
