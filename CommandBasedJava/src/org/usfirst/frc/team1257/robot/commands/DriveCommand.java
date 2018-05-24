@@ -5,6 +5,7 @@ import org.usfirst.frc.team1257.robot.Robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -25,8 +26,11 @@ public class DriveCommand extends Command {
     protected void execute() {
     	double forwardSpeed = 0;
     	double turnSpeed = 0;
-    	forwardSpeed = OI.DriveController.getX(GenericHID.Hand.kLeft);
+    	forwardSpeed = OI.DriveController.getY(GenericHID.Hand.kLeft);
 		turnSpeed = OI.DriveController.getX(GenericHID.Hand.kLeft);
+		
+		SmartDashboard.putString("Command", forwardSpeed + " : " + turnSpeed);
+		
     	Robot.m_driveTrainSubsystem.DriveTrain.arcadeDrive(-forwardSpeed, turnSpeed);
     }
 
@@ -37,6 +41,7 @@ public class DriveCommand extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.m_driveTrainSubsystem.DriveTrain.arcadeDrive(0, 0);
     }
 
     // Called when another command which requires one or more of the same
