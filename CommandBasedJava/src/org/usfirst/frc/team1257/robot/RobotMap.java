@@ -9,11 +9,8 @@ package org.usfirst.frc.team1257.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -21,12 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
  * the wiring easier and significantly reduces the number of magic numbers
  * floating around.
  */
-public class RobotMap {
-//	private static final String kDefaultAuto = "Default";
-//	private static final String kCustomAuto = "My Auto";
-//	private String m_autoSelected;
-//	private SendableChooser<String> m_chooser = new SendableChooser<>();
 
+public class RobotMap {
 	public static WPI_TalonSRX m_frontLeft = new WPI_TalonSRX(3);
 	public static WPI_TalonSRX m_rearLeft = new WPI_TalonSRX(4);
 	public static SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);

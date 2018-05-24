@@ -5,31 +5,24 @@ import org.usfirst.frc.team1257.robot.Robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- *
- */
 public class DriveCommand extends Command {
 
     public DriveCommand() {
         // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis);
     	requires(Robot.m_driveTrainSubsystem);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	double forwardSpeed = 0;
     	double turnSpeed = 0;
-    	
-//    	forwardSpeed = OI.DriveController.getY(GenericHID.Hand.kLeft);
-//		turnSpeed = OI.DriveController.getX(GenericHID.Hand.kLeft);
-		
+
 		if(OI.DriveController.getAButton())
 		{
 			forwardSpeed = OI.DriveController.getY(GenericHID.Hand.kLeft);
@@ -66,5 +59,6 @@ public class DriveCommand extends Command {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	
     }
 }

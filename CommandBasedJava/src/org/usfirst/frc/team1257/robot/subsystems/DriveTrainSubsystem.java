@@ -5,14 +5,9 @@ import org.usfirst.frc.team1257.robot.commands.DriveCommand;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
-/**
- *
- */
 
 public class DriveTrainSubsystem extends Subsystem {
 	
@@ -28,12 +23,8 @@ public class DriveTrainSubsystem extends Subsystem {
 	SpeedControllerGroup m_right = RobotMap.m_right;
 
 	public DifferentialDrive DriveTrain = RobotMap.DriveTrain;
-    
 
     public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        //setDefaultCommand(new MySpecialCommand());
     	setDefaultCommand(new DriveCommand());
     }
 }
-
