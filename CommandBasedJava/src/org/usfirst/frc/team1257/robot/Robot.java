@@ -33,7 +33,6 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		m_oi = new OI();
 	}
-
 	/**
 	 * This function is called once each time the robot enters Disabled mode.
 	 * You can use it to reset any subsystem information you want to clear when

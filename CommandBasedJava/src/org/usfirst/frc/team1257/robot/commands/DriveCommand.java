@@ -26,6 +26,7 @@ public class DriveCommand extends Command {
     protected void execute() {
     	double forwardSpeed = 0;
     	double turnSpeed = 0;
+    	
     	forwardSpeed = OI.DriveController.getY(GenericHID.Hand.kLeft);
 		turnSpeed = OI.DriveController.getX(GenericHID.Hand.kLeft);
 		
