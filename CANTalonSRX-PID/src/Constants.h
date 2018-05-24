@@ -7,10 +7,13 @@ namespace consts
 	constexpr int PID_LOOP_ID = 0;
 	constexpr int TALON_TIMEOUT_MS = 10;
 
-	constexpr double TALON_P = 0.2;
+	constexpr double TALON_P = 0.02;
 	constexpr double TALON_I = 0.0;
 	constexpr double TALON_D = 0.0;
 	constexpr double TALON_F = 0.0;
+
+	constexpr double TALON_LEFT[] =  {0.02, 0.0, 0.0, 0.0};
+	constexpr double TALON_RIGHT[] = {0.02, 0.0, 0.0, 0.0};
 
 	constexpr double DISTANCE_BETWEEN_WHEELS = 20;
 

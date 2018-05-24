@@ -83,16 +83,16 @@ public:
 		FrontRightMotor.ConfigAllowableClosedloopError(0, InchesToPulses(consts::TALON_TOLERANCE), consts::TALON_TIMEOUT_MS);
 
 		FrontLeftMotor.SelectProfileSlot(0, 0);
-		FrontLeftMotor.Config_kP(0, consts::TALON_P, consts::TALON_TIMEOUT_MS);
-		FrontLeftMotor.Config_kI(0, consts::TALON_I, consts::TALON_TIMEOUT_MS);
-		FrontLeftMotor.Config_kD(0, consts::TALON_D, consts::TALON_TIMEOUT_MS);
-		FrontLeftMotor.Config_kF(0, consts::TALON_F, consts::TALON_TIMEOUT_MS);
+		FrontLeftMotor.Config_kP(0, consts::TALON_LEFT[0], consts::TALON_TIMEOUT_MS);
+		FrontLeftMotor.Config_kI(0, consts::TALON_LEFT[1], consts::TALON_TIMEOUT_MS);
+		FrontLeftMotor.Config_kD(0, consts::TALON_LEFT[2], consts::TALON_TIMEOUT_MS);
+		FrontLeftMotor.Config_kF(0, consts::TALON_LEFT[3], consts::TALON_TIMEOUT_MS);
 
 		FrontRightMotor.SelectProfileSlot(0, 0);
-		FrontRightMotor.Config_kP(0, consts::TALON_P, consts::TALON_TIMEOUT_MS);
-		FrontRightMotor.Config_kI(0, consts::TALON_I, consts::TALON_TIMEOUT_MS);
-		FrontRightMotor.Config_kD(0, consts::TALON_D, consts::TALON_TIMEOUT_MS);
-		FrontRightMotor.Config_kF(0, consts::TALON_F, consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.Config_kP(0, consts::TALON_RIGHT[0], consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.Config_kI(0, consts::TALON_RIGHT[1], consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.Config_kD(0, consts::TALON_RIGHT[2], consts::TALON_TIMEOUT_MS);
+		FrontRightMotor.Config_kF(0, consts::TALON_RIGHT[3], consts::TALON_TIMEOUT_MS);
 
 		BackLeftMotor.Follow(FrontLeftMotor);
 		BackRightMotor.Follow(FrontRightMotor);
