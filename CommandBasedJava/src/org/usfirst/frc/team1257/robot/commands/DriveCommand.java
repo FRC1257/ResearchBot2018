@@ -25,8 +25,22 @@ public class DriveCommand extends Command {
     protected void execute() {
     	double forwardSpeed = 0;
     	double turnSpeed = 0;
-    	forwardSpeed = OI.DriveController.getX(GenericHID.Hand.kLeft);
-		turnSpeed = OI.DriveController.getX(GenericHID.Hand.kLeft);
+    	
+    	if(OI.DriveController.getAButton()) {
+    		forwardSpeed = OI.DriveController.getX(GenericHID.Hand.kLeft);
+			turnSpeed = OI.DriveController.getX(GenericHID.Hand.kLeft);
+		}
+    	else if(OI.DriveController.getBumper(GenericHID.Hand.kLeft))
+		{
+			forwardSpeed = OI.DriveController.getY(GenericHID.Hand.kLeft);
+			turnSpeed = OI.DriveController.getX(GenericHID.Hand.kRight);
+		}
+		else if(OI.DriveController.getBumper(GenericHID.Hand.kRight))
+		{
+			forwardSpeed = OI.DriveController.getY(GenericHID.Hand.kRight);
+			turnSpeed = OI.DriveController.getX(GenericHID.Hand.kRight);
+		}
+    	
     	Robot.m_driveTrainSubsystem.DriveTrain.arcadeDrive(-forwardSpeed, turnSpeed);
     }
 

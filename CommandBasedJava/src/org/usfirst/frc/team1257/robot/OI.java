@@ -26,7 +26,6 @@ public class OI {
 	// Joystick stick = new Joystick(port);
 	// Button button = new JoystickButton(stick, buttonNumber);
 	public static XboxController DriveController = new XboxController(0);
-	Button AButton = new JoystickButton(DriveController, 1);
 	
 	// There are a few additional built in buttons you can use. Additionally,
 	// by subclassing Button you can create custom triggers and bind those to
@@ -47,7 +46,7 @@ public class OI {
 	
 	public OI()
 	{
-		AButton.whileHeld(new DriveCommand());
+		new DriveCommand();
 	}
 	
 	// Start the command when the button is released and let it run the command
