@@ -7,6 +7,8 @@
 
 package org.usfirst.frc.team1257.robot;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Spark;
@@ -29,12 +31,12 @@ public class Robot extends IterativeRobot {
 	private String m_autoSelected;
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	XboxController DriveController = new XboxController(0);
-	Spark m_frontLeft = new Spark(1);
-	Spark m_rearLeft = new Spark(2);
+	WPI_TalonSRX m_frontLeft = new WPI_TalonSRX(1);
+	WPI_TalonSRX m_rearLeft = new WPI_TalonSRX(2);
 	SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
 
-	Spark m_frontRight = new Spark(3);
-	Spark m_rearRight = new Spark(4);
+	WPI_TalonSRX m_frontRight = new WPI_TalonSRX(3);
+	WPI_TalonSRX m_rearRight = new WPI_TalonSRX(4);
 	SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
 
 	DifferentialDrive DriveTrain = new DifferentialDrive(m_left, m_right);
