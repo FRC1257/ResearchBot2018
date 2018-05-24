@@ -117,7 +117,7 @@ public class Robot extends IterativeRobot {
 		else if(DriveController.getBumper(GenericHID.Hand.kRight))
 		{
 			forwardSpeed = DriveController.getY(GenericHID.Hand.kRight);
-			turnSpeed = DriveController.getX(GenericHID.Hand.kRight);
+			turnSpeed = DriveController.getX(GenericHID.Hand.kLeft);
 		}
 
 		// Negative is used to make forward positive and backwards negative
