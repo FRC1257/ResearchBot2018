@@ -53,6 +53,11 @@ public:
 		}
 	}
 
+	static void RemoveButton(string buttonName)
+	{
+		buttons.erase(find(buttons.begin(), buttons.end(), buttonName));
+	}
+
 	static void UpdateButtons()
 	{
 		auto iterator = buttons.begin();
