@@ -39,7 +39,7 @@ public class EnhancedTalonSRX extends WPI_TalonSRX
 	}
 	
 	//Current Limiting
-	public void enableCurrentLimit(int amps, int timeoutMs)
+	public void enableCurrentLimit(int amps)
 	{
 		configContinuousCurrentLimit(amps, timeoutMs);
 		super.enableCurrentLimit(true);
@@ -86,11 +86,13 @@ public class EnhancedTalonSRX extends WPI_TalonSRX
 	
 	public void configFeedbackSensor(FeedbackDevice feedbackDevice, boolean sensorPhase)
 	{
-		super.configSelectedFeedbackSensor(feedbackDevice, pidLoopId, timeoutMs);
+		configSelectedFeedbackSensor(feedbackDevice, pidLoopId, timeoutMs);
+		setSensorPhase(sensorPhase);
 	}
 	public void configFeedbackSensor(RemoteFeedbackDevice feedbackDevice, boolean sensorPhase)
 	{
-		super.configSelectedFeedbackSensor(feedbackDevice, pidLoopId, timeoutMs);
+		configSelectedFeedbackSensor(feedbackDevice, pidLoopId, timeoutMs);
+		setSensorPhase(sensorPhase);
 	}
 	
 	//Limit switch
