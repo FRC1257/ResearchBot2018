@@ -1,5 +1,9 @@
 package org.usfirst.frc.team1257.robot;
 
+import org.usfirst.frc.team1257.robot.util.EnhancedDashboard;
+import org.usfirst.frc.team1257.robot.util.Looper;
+import org.usfirst.frc.team1257.robot.util.SnailController;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import jaci.pathfinder.Pathfinder;
@@ -12,6 +16,9 @@ public class Robot extends IterativeRobot {
 
 	DriveTrain driveTrain;
 	SnailController driveController;
+	
+	Looper sensorLooper;
+	Looper pathfinderLooper;
 	
 	Timer timer;
 	
@@ -32,9 +39,6 @@ public class Robot extends IterativeRobot {
 		driveTrain = DriveTrain.getInstance();
 		driveController = new SnailController(0);
 		
-		timer = new Timer();
-		timer.start();
-		
 		EnhancedDashboard.putNumber("Left Pos");
 		EnhancedDashboard.putNumber("Left Vel");
 		EnhancedDashboard.putNumber("Left Acc");
@@ -44,6 +48,16 @@ public class Robot extends IterativeRobot {
 		EnhancedDashboard.putNumber("Right Vel");
 		EnhancedDashboard.putNumber("Right Acc");
 		EnhancedDashboard.putNumber("Right Jerk");
+		
+		timer = new Timer();
+		timer.start();
+		
+		sensorLooper = new Looper(10);
+		sensorLooper.add(this::outputInfo);
+		sensorLooper.start();
+		
+		pathfinderLooper = new Looper(20);
+		pathfinderLooper.add(this::followPath);
 	}
 	
 	@Override
@@ -75,10 +89,16 @@ public class Robot extends IterativeRobot {
 				Constants.LEFT_V, Constants.LEFT_A);
 		followerRight.configurePIDVA(Constants.RIGHT_P, Constants.RIGHT_I, Constants.RIGHT_D,
 				Constants.RIGHT_V, Constants.RIGHT_A);
+		
+		pathfinderLooper.start();
 	}
 
 	@Override
 	public void autonomousPeriodic() {
+		
+	}
+	
+	public void followPath() {
 		double leftOutput = followerLeft.calculate((int) driveTrain.getLeftEncoderPulses());
 		double rightOutput = followerRight.calculate((int) driveTrain.getLeftEncoderPulses());
 		
@@ -94,8 +114,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		driveTrain.arcadeDrive(driveController.getForwardSpeed(), driveController.getTurnSpeed());
-		
-		//Output Information
+	}
+	
+	public void outputInfo() {
 		double leftVelDiff = driveTrain.getLeftEncoderVelocity() - EnhancedDashboard.getNumber("Left Vel");
 		double leftAcc = leftVelDiff / (timer.get() - lastLeftAccTime);
 		lastLeftAccTime = timer.get();
@@ -104,10 +125,10 @@ public class Robot extends IterativeRobot {
 		double leftJerk = leftAccDiff / (timer.get() - lastLeftJerkTime);
 		lastLeftJerkTime = timer.get();
 		
-		EnhancedDashboard.putNumber("Left Pos", driveTrain.getLeftEncoder());
-		EnhancedDashboard.putNumber("Left Vel", driveTrain.getLeftEncoderVelocity());
-		EnhancedDashboard.putNumber("Left Acc", leftAcc);
-		EnhancedDashboard.putNumber("Left Jerk", leftJerk);
+		EnhancedDashboard.putNumber("Left Pos", Constants.inchesToMeters(driveTrain.getLeftEncoder()));
+		EnhancedDashboard.putNumber("Left Vel", Constants.inchesToMeters(driveTrain.getLeftEncoderVelocity()));
+		EnhancedDashboard.putNumber("Left Acc", Constants.inchesToMeters(leftAcc));
+		EnhancedDashboard.putNumber("Left Jerk", Constants.inchesToMeters(leftJerk));
 		
 		double rightVelDiff = driveTrain.getRightEncoderVelocity() - EnhancedDashboard.getNumber("Right Vel");
 		double rightAcc = rightVelDiff / (timer.get() - lastRightAccTime);
@@ -117,9 +138,9 @@ public class Robot extends IterativeRobot {
 		double rightJerk = rightAccDiff / (timer.get() - lastRightJerkTime);
 		lastRightJerkTime = timer.get();
 
-		EnhancedDashboard.putNumber("Right Pos", driveTrain.getRightEncoder());
-		EnhancedDashboard.putNumber("Right Vel", driveTrain.getRightEncoderVelocity());
-		EnhancedDashboard.putNumber("Right Acc", rightAcc);
-		EnhancedDashboard.putNumber("Right Jerk", rightJerk);
+		EnhancedDashboard.putNumber("Right Pos", Constants.inchesToMeters(driveTrain.getRightEncoder()));
+		EnhancedDashboard.putNumber("Right Vel", Constants.inchesToMeters(driveTrain.getRightEncoderVelocity()));
+		EnhancedDashboard.putNumber("Right Acc", Constants.inchesToMeters(rightAcc));
+		EnhancedDashboard.putNumber("Right Jerk", Constants.inchesToMeters(rightJerk));
 	}
 }

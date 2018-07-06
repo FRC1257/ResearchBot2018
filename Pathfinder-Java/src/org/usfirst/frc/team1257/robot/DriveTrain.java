@@ -1,5 +1,9 @@
 package org.usfirst.frc.team1257.robot;
 
+import org.usfirst.frc.team1257.robot.util.AngleSensorGroup;
+import org.usfirst.frc.team1257.robot.util.EnhancedDashboard;
+import org.usfirst.frc.team1257.robot.util.EnhancedTalonSRX;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.SPI;

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1257.robot;
+package org.usfirst.frc.team1257.robot.util;
 
 import edu.wpi.first.wpilibj.XboxController;
 
