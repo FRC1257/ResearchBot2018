@@ -23,6 +23,10 @@ bin
 bin/*
 bin/*/*
 
+# Exception for Needed Project files
+!.project
+!.classpath
+
 # Backup Files
 *~
 
@@ -41,3 +45,7 @@ CMakeCache.txt
 */Debug/*
 */.settings/
 */.settings/*
+
+# Java
+*/build/*
+*/dist/*
