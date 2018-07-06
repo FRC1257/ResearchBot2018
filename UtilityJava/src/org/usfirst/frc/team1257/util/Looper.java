@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1257.robot.util;
+package org.usfirst.frc.team1257.util;
 
 import java.util.Vector;
 
